@@ -4,7 +4,7 @@ export default function Footer() {
   return (
     // Elimina el div contenedor o ajusta sus clases
     // Las clases 'fixed-bottom' y 'w-100' son clave aquí
-    <footer className="bg-dark text-center text-white fixed-bottom w-100">
+    <footer className="bg-dark text-center text-white w-100 mt-5">
       <div className="container p-4 pb-0">
         <section className="mb-4">
           <a className="btn btn-outline-light btn-floating m-1" href="#!" role="button">
