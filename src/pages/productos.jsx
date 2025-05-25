@@ -1,24 +1,24 @@
-import { useFetch } from "../useFetch"; // Assuming useFetch is correctly implemented
+import { useFetch } from "../useFetch"; 
 import Spinner from "../components/spinner";
 
 export default function Productos() {
-  // Destructure data, loading, and error from your useFetch hook
+  
   const { data, loading, error } = useFetch("https://fakestoreapi.com/products");
 
-  // Display loading state
+ 
   if (loading) {
     return <Spinner/>
   }
 
-  // Display error state
+
   if (error) {
     return <p>Error al cargar los productos: {error.message}</p>;
   }
 
-  // If data is loaded and not an empty array, render the products
+
   return (
     <div className="container mt-4">
-      <h2 className="text-center mb-4">Nuestros Productos</h2> 
+      {/* <h2 className="text-center mb-4">Nuestros Productos</h2>  */}
       <div className="row d-flex justify-content-center">
        
         {data && data.length > 0 ? (
