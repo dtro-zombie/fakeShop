@@ -1,9 +1,12 @@
 import {Navbar,Container,Nav,NavDropdown} from 'react-bootstrap'
-
+import { Link, useNavigate } from 'react-router-dom';
 
 
 export default function Header()
 {
+
+const navigate = useNavigate();
+
     return(
 
        <>
@@ -13,8 +16,8 @@ export default function Header()
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link href="#features">Inicio</Nav.Link>
-            <Nav.Link href="#pricing">Poductos</Nav.Link>
+             <Nav.Link as={Link} to="/">Inicio</Nav.Link>
+            {/* <Nav.Link href="#pricing">Poductos</Nav.Link> */}
             {/* <NavDropdown title="Dropdown" id="collapsible-nav-dropdown">
               <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
               <NavDropdown.Item href="#action/3.2">
@@ -28,7 +31,7 @@ export default function Header()
             </NavDropdown> */}
           </Nav>
           <Nav>
-            <Nav.Link href="#deets">Login</Nav.Link>
+            <Nav.Link as={Link} to="/loginForm">Login</Nav.Link>
             {/* <Nav.Link eventKey={2} href="#memes">
               Dank memes
             </Nav.Link> */}
