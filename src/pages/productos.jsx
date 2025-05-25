@@ -1,4 +1,5 @@
 import { useFetch } from "../useFetch"; // Assuming useFetch is correctly implemented
+import Spinner from "../components/spinner";
 
 export default function Productos() {
   // Destructure data, loading, and error from your useFetch hook
@@ -6,7 +7,7 @@ export default function Productos() {
 
   // Display loading state
   if (loading) {
-    return <p>Cargando productos...</p>;
+    return <Spinner/>
   }
 
   // Display error state
