@@ -1,10 +1,11 @@
-import { useContext, useState, useEffect, useMemo } from "react";
-import styled from "styled-components";
-import { Container, Row, Col, Spinner, Alert, Form, Pagination } from "react-bootstrap";
-import { CarritoContext } from "../context/carritoContext";
-import { useFetch } from "../useFetch";
-import { FaCartPlus, FaCheck, FaTrash, FaExclamationTriangle, FaSearch } from "react-icons/fa";
-import { toast } from "react-toastify";
+import { useContext, useState, useEffect, useMemo } from "react"
+import styled from "styled-components"
+import { Container, Row, Col, Spinner, Alert, Form, Pagination } from "react-bootstrap"
+import { CarritoContext } from "../context/carritoContext"
+import { useFetch } from "../useFetch"
+import { FaCartPlus, FaCheck, FaTrash, FaExclamationTriangle, FaSearch } from "react-icons/fa"
+import { toast } from "react-toastify"
+import SEO from "../components/seo"
 
 const ProductContainer = styled(Container)`
   margin-top: 2rem;
@@ -188,23 +189,31 @@ export default function Productos() {
   );
 
   return (
-    <ProductContainer className="mt-4">
-      {/* Barra de búsqueda */}
+ <ProductContainer className="mt-4">
+      {/* Componente SEO */}
+      <SEO 
+        title="Productos" 
+        description="Explora nuestra colección de productos electrónicos, moda y más."
+        keywords="productos, compras, electrónicos, moda, fakeShop"
+      />
+
+      {/* Barra de búsqueda con accesibilidad */}
       <Row className="justify-content-center mb-4">
         <Col md={8}>
           <SearchContainer>
-            <FaSearch className="search-icon" />
+            <FaSearch className="search-icon" aria-hidden="true" />
             <Form.Control
               type="text"
               placeholder="Buscar productos por nombre o categoría..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              aria-label="Buscar productos"
             />
           </SearchContainer>
         </Col>
       </Row>
 
-      {/* Lista de productos */}
+      {/* Lista de productos con accesibilidad */}
       <Row className="justify-content-center">
         {currentProducts.length > 0 ? (
           currentProducts.map(item => (
@@ -213,8 +222,9 @@ export default function Productos() {
                 <ProductImage>
                   <img 
                     src={item.image} 
-                    alt={item.title}
+                    alt={`Imagen de ${item.title}`} 
                     className="p-3"
+                    loading="lazy"
                   />
                 </ProductImage>
                 <div className="card-body">
@@ -227,6 +237,7 @@ export default function Productos() {
                       className="form-select form-select-sm my-2"
                       onChange={(e) => cambiarCantidad(item.id, e.target.value)}
                       value={cantidades[item.id] || 1}
+                      aria-label={`Cantidad para ${item.title}`}
                     >
                       {[...Array(10)].map((_, i) => (
                         <option key={i + 1} value={i + 1}>{i + 1}</option>
@@ -239,8 +250,9 @@ export default function Productos() {
                       <ProductButton
                         className="btn btn-danger btn-sm"
                         onClick={() => handleEliminar(item.id, item.title)}
+                        aria-label={`Quitar ${item.title} del carrito`}
                       >
-                        <FaTrash className="me-1" /> Quitar
+                        <FaTrash className="me-1" aria-hidden="true" /> Quitar
                       </ProductButton>
                     ) : (
                       <>
@@ -248,15 +260,17 @@ export default function Productos() {
                           <ProductButton
                             className="btn btn-success btn-sm"
                             onClick={() => toggleSelect(item.id)}
+                            aria-label={`Agregar ${item.title} al carrito`}
                           >
-                            <FaCartPlus className="me-1" /> Agregar
+                            <FaCartPlus className="me-1" aria-hidden="true" /> Agregar
                           </ProductButton>
                         ) : (
                           <ProductButton
                             className="btn btn-primary btn-sm"
                             onClick={() => handleAgregar(item, cantidades[item.id] || 1)}
+                            aria-label={`Confirmar compra de ${cantidades[item.id] || 1} ${item.title}`}
                           >
-                            <FaCheck className="me-1" /> Confirmar {cantidades[item.id] || 1}
+                            <FaCheck className="me-1" aria-hidden="true" /> Confirmar {cantidades[item.id] || 1}
                           </ProductButton>
                         )}
                       </>
@@ -268,24 +282,26 @@ export default function Productos() {
           ))
         ) : (
           <Col className="text-center py-5">
-            <Alert variant="info">
+            <Alert variant="info" aria-live="polite">
               No se encontraron productos que coincidan con tu búsqueda.
             </Alert>
           </Col>
         )}
       </Row>
 
-      {/* Paginación */}
+      {/* Paginación accesible */}
       {filteredProducts.length > productsPerPage && (
         <PaginationContainer>
           <Pagination>
             <Pagination.First 
               onClick={() => handlePageChange(1)} 
-              disabled={currentPage === 1} 
+              disabled={currentPage === 1}
+              aria-label="Primera página"
             />
             <Pagination.Prev 
               onClick={() => handlePageChange(currentPage - 1)} 
-              disabled={currentPage === 1} 
+              disabled={currentPage === 1}
+              aria-label="Página anterior"
             />
             
             {Array.from({ length: totalPages }, (_, i) => i + 1).map(number => (
@@ -293,6 +309,7 @@ export default function Productos() {
                 key={number}
                 active={number === currentPage}
                 onClick={() => handlePageChange(number)}
+                aria-label={`Página ${number}`}
               >
                 {number}
               </Pagination.Item>
@@ -300,11 +317,13 @@ export default function Productos() {
             
             <Pagination.Next 
               onClick={() => handlePageChange(currentPage + 1)} 
-              disabled={currentPage === totalPages} 
+              disabled={currentPage === totalPages}
+              aria-label="Página siguiente"
             />
             <Pagination.Last 
               onClick={() => handlePageChange(totalPages)} 
-              disabled={currentPage === totalPages} 
+              disabled={currentPage === totalPages}
+              aria-label="Última página"
             />
           </Pagination>
         </PaginationContainer>
