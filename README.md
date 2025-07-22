@@ -60,32 +60,12 @@ npm run dev
 yarn dev
 
 
-🏗️ Estructura del código
-text
-
-src/
-├── components/
-│   ├── Cart/            # Componentes del carrito
-│   ├── Product/         # Tarjetas y detalles de producto
-│   ├── UI/              # Componentes reutilizables
-│   └── Layout.jsx       # Estructura principal
-├── context/
-│   └── CartContext.jsx  # Lógica global del carrito
-├── pages/
-│   ├── CartPage.jsx     # Página del carrito
-│   ├── HomePage.jsx     # Página principal
-│   └── ProductPage.jsx  # Detalle de producto
-├── App.jsx              # Rutas principales
-└── main.jsx             # Punto de entrada
-
 🎯 Funcionalidades clave
 Experiencia de producto
 
     Vista en grid y lista de productos
 
     Detalles completos por producto
-
-    Galería de imágenes (hover effect)
 
     Rating visual de productos
 
@@ -108,8 +88,6 @@ Checkout simulado
     Resumen de pedido
 
     Animación de "compra exitosa"
-
-    Reinicio del carrito post-compra
 
 📱 Responsive Design
 
