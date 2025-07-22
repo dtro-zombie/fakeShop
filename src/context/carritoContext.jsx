@@ -37,8 +37,18 @@ export const CarritoProvider = ({ children }) => {
     );
   };
 
+  const vaciarCarrito = () => {
+    setCarrito([]);
+  };
+
   return (
-    <CarritoContext.Provider value={{ carrito, agregarProducto, quitarProducto, cambiarCantidad }}>
+    <CarritoContext.Provider value={{ 
+      carrito, 
+      agregarProducto, 
+      quitarProducto, 
+      cambiarCantidad,
+      vaciarCarrito 
+    }}>
       {children}
     </CarritoContext.Provider>
   );
