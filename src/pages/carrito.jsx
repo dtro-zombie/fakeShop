@@ -2,14 +2,14 @@ import { useContext } from 'react';
 import { CarritoContext } from '../context/carritoContext';
 
 const Carrito = () => {
-  const { carrito, quitarProducto, cambiarCantidad } = useContext(CarritoContext);
+  const { carrito, quitarProducto, cambiarCantidad, vaciarCarrito } = useContext(CarritoContext);
 
   const calcularTotal = () => {
     return carrito.reduce((total, producto) => total + (producto.price * producto.cantidad), 0);
   };
 
   return (
-    <div className="container py-5 vh-100">
+    <div className="container py-5 min-vh-100">
       <h2 className="mb-4 text-primary">
         <i className="bi bi-cart-fill me-2"></i>Tu Carrito de Compras
       </h2>
@@ -18,6 +18,15 @@ const Carrito = () => {
         <div className="alert alert-info">Tu carrito está vacío</div>
       ) : (
         <>
+          <div className="d-flex justify-content-end mb-3">
+            <button 
+              className="btn btn-danger"
+              onClick={vaciarCarrito}
+            >
+              <i className="bi bi-trash-fill me-2"></i>Vaciar carrito
+            </button>
+          </div>
+
           {carrito.map((producto) => (
             <div className="card mb-4 shadow-sm rounded" key={producto.id}>
               <div className="row g-0 align-items-center">
@@ -67,9 +76,14 @@ const Carrito = () => {
             <h4 className="text-dark">
               Total: <span className="text-success">${calcularTotal().toFixed(2)}</span>
             </h4>
-            <button className="btn btn-success btn-lg shadow">
-              <i className="bi bi-credit-card-fill me-2"></i>Finalizar compra
-            </button>
+            <div>
+              <button className="btn btn-outline-danger me-3" onClick={vaciarCarrito}>
+                <i className="bi bi-trash-fill me-1"></i>Vaciar todo
+              </button>
+              <button className="btn btn-success btn-lg shadow">
+                <i className="bi bi-credit-card-fill me-2"></i>Finalizar compra
+              </button>
+            </div>
           </div>
         </>
       )}
