@@ -19,7 +19,7 @@ export default function Header() {
             <>
               <span className="me-2">Hola, {user.name}</span>
               {user.role === 'admin' && (
-                <Link to="/admin" className="btn btn-outline-light btn-sm">
+                <Link to="/admin/dashboard" className="btn btn-outline-light btn-sm">
                   Admin
                 </Link>
               )}

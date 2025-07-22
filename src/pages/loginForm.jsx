@@ -26,10 +26,11 @@ export default function LoginForm() {
           navigate(location.state?.from?.pathname || '/');
         }
       } else {
-        setError('Credenciales incorrectas');
+        setError('Credenciales incorrectas. Por favor, inténtalo de nuevo.');
       }
     } catch (err) {
       setError('Ocurrió un error al iniciar sesión');
+      console.error('Login error:', err);
     } finally {
       setIsLoading(false);
     }
