@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import { Container, Row, Col, Card, Form, Button, Alert } from 'react-bootstrap';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import { FaSignInAlt, FaUserShield } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 
 const LoginContainer = styled(Container)`
   margin-top: 5rem;
@@ -49,6 +51,8 @@ const StyledForm = styled(Form)`
     
     &:disabled {
       opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
     }
   }
 `;
@@ -58,6 +62,7 @@ const AdminNote = styled.small`
   margin-top: 1rem;
   color: #6c757d;
   text-align: center;
+  font-size: 0.85rem;
 `;
 
 export default function LoginForm() {
@@ -74,20 +79,63 @@ export default function LoginForm() {
     setError('');
     setIsLoading(true);
 
+    if (!email || !password) {
+      setError('Por favor completa todos los campos');
+      toast.error('Por favor completa todos los campos', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      const { success, isAdmin } = await login(email, password);
+      const { success, isAdmin, error: loginError } = await login(email, password);
       
       if (success) {
-        if (isAdmin) {
-          navigate('/admin/dashboard');
-        } else {
-          navigate(location.state?.from?.pathname || '/');
-        }
+        const welcomeMessage = isAdmin ? 'Bienvenido Administrador' : 'Bienvenido';
+        toast.success(welcomeMessage, {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+        
+        // Redirección basada en rol y ubicación previa
+        const redirectPath = isAdmin 
+          ? '/admin/dashboard' 
+          : location.state?.from?.pathname || '/';
+          
+        navigate(redirectPath, { replace: true });
       } else {
-        setError('Credenciales incorrectas. Por favor, inténtalo de nuevo.');
+        const errorMessage = loginError || 'Credenciales incorrectas. Por favor, inténtalo de nuevo.';
+        setError(errorMessage);
+        toast.error(errorMessage, {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
       }
     } catch (err) {
-      setError('Ocurrió un error al iniciar sesión');
+      const errorMessage = err.message || 'Ocurrió un error al iniciar sesión';
+      setError(errorMessage);
+      toast.error(errorMessage, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
       console.error('Login error:', err);
     } finally {
       setIsLoading(false);
@@ -96,19 +144,25 @@ export default function LoginForm() {
 
   return (
     <LoginContainer>
-      <Row className="justify-content-center vh-100">
+      <Row className="justify-content-center">
         <Col md={6} lg={4}>
           {location.state?.fromCarrito && (
-            <Alert variant="info" className="mb-3">
+            <Alert variant="info" className="mb-3 text-center">
               Debes iniciar sesión para acceder al carrito
             </Alert>
           )}
 
-          {error && <Alert variant="danger" className="mb-3">{error}</Alert>}
+          {error && (
+            <Alert variant="danger" className="mb-3 text-center">
+              {error}
+            </Alert>
+          )}
 
           <LoginCard>
             <div className="card-header">
-              <h2 className="card-title">Iniciar sesión</h2>
+              <h2 className="card-title">
+                <FaSignInAlt className="me-2" /> Iniciar sesión
+              </h2>
             </div>
             <div className="card-body">
               <StyledForm onSubmit={handleSubmit}>
@@ -118,7 +172,9 @@ export default function LoginForm() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Ingresa tu email"
                     required
+                    disabled={isLoading}
                   />
                 </Form.Group>
                 <Form.Group className="mb-3">
@@ -127,7 +183,9 @@ export default function LoginForm() {
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Ingresa tu contraseña"
                     required
+                    disabled={isLoading}
                   />
                 </Form.Group>
                 <Button 
@@ -136,10 +194,15 @@ export default function LoginForm() {
                   className="w-100"
                   disabled={isLoading}
                 >
-                  {isLoading ? 'Ingresando...' : 'Ingresar'}
+                  {isLoading ? 'Ingresando...' : (
+                    <>
+                      <FaSignInAlt className="me-2" /> Ingresar
+                    </>
+                  )}
                 </Button>
               </StyledForm>
               <AdminNote>
+                <FaUserShield className="me-1" />
                 Credenciales de admin: admin@fakeshop.com / admin123
               </AdminNote>
             </div>

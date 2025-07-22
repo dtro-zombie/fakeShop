@@ -1,6 +1,8 @@
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'; 
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CarritoProvider } from './context/carritoContext';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Header from './components/header';
 import Footer from './components/footer';
 import Productos from './pages/productos';
@@ -66,6 +68,18 @@ function App() {
             />
           </Routes>
           <Footer />
+          <ToastContainer
+            position="top-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+          />
         </BrowserRouter>
       </CarritoProvider>
     </AuthProvider>
