@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import { CarritoContext } from '../context/carritoContext';
 
 const Carrito = () => {
-  const { carrito, quitarProducto, cambiarCantidad, vaciarCarrito } = useContext(CarritoContext);
+  const { carrito, eliminarDelCarrito, actualizarCantidad, vaciarCarrito } = useContext(CarritoContext);
 
   const calcularTotal = () => {
     return carrito.reduce((total, producto) => total + (producto.price * producto.cantidad), 0);
@@ -51,7 +51,7 @@ const Carrito = () => {
                   <select
                     className="form-select form-select-sm"
                     value={producto.cantidad}
-                    onChange={(e) => cambiarCantidad(producto.id, parseInt(e.target.value))}
+                    onChange={(e) => actualizarCantidad(producto.id, parseInt(e.target.value))}
                   >
                     {[...Array(10)].map((_, i) => (
                       <option key={i + 1} value={i + 1}>
@@ -63,7 +63,7 @@ const Carrito = () => {
                 <div className="col-md-2 text-center">
                   <button
                     className="btn btn-outline-danger btn-sm"
-                    onClick={() => quitarProducto(producto.id)}
+                    onClick={() => eliminarDelCarrito(producto.id)}
                   >
                     <i className="bi bi-trash-fill me-1"></i>Quitar
                   </button>

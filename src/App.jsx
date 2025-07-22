@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate,useLocation } from 'react-router-dom'; 
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'; 
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CarritoProvider } from './context/carritoContext';
 import Header from './components/header';
@@ -7,13 +7,16 @@ import Productos from './pages/productos';
 import LoginForm from './pages/loginForm';
 import RegisterForm from './pages/registerForm';
 import Carrito from './pages/carrito';
+import AdminDashboard from './pages/adminDashboard';
 import './App.css';
 
 // Componente para rutas protegidas
 const ProtectedRoute = ({ children }) => {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const location = useLocation();
 
+  if (loading) return <div>Cargando...</div>;
+  
   if (!user) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
@@ -21,6 +24,19 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
+// Componente para rutas de admin
+const AdminRoute = ({ children }) => {
+  const { user, loading, isAdmin } = useAuth();
+  const location = useLocation();
+
+  if (loading) return <div>Cargando...</div>;
+  
+  if (!user || !isAdmin) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  return children;
+};
 
 function App() {
   return (
@@ -29,7 +45,7 @@ function App() {
         <BrowserRouter>
           <Header />
           <Routes>
-            <Route path="/loginForm" element={<LoginForm />} />
+            <Route path="/login" element={<LoginForm />} />
             <Route path="/register" element={<RegisterForm />} />
             <Route path="/" element={<Productos />} />
             <Route 
@@ -38,6 +54,14 @@ function App() {
                 <ProtectedRoute>
                   <Carrito />
                 </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/dashboard" 
+              element={
+                <AdminRoute>
+                  <AdminDashboard />
+                </AdminRoute>
               } 
             />
           </Routes>

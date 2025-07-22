@@ -6,6 +6,7 @@ export default function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
@@ -13,16 +14,24 @@ export default function LoginForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setIsLoading(true);
 
     try {
-      const success = await login(email, password);
+      const { success, isAdmin } = await login(email, password);
+      
       if (success) {
-        navigate(location.state?.from?.pathname || '/');
+        if (isAdmin) {
+          navigate('/admin/dashboard');
+        } else {
+          navigate(location.state?.from?.pathname || '/');
+        }
       } else {
         setError('Credenciales incorrectas');
       }
     } catch (err) {
-      setError(err.message);
+      setError('Ocurrió un error al iniciar sesión');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -62,10 +71,19 @@ export default function LoginForm() {
                     required
                   />
                 </div>
-                <button type="submit" className="btn btn-primary w-100">
-                  Ingresar
+                <button 
+                  type="submit" 
+                  className="btn btn-primary w-100"
+                  disabled={isLoading}
+                >
+                  {isLoading ? 'Ingresando...' : 'Ingresar'}
                 </button>
               </form>
+              <div className="text-center mt-3">
+                <small>
+                  Credenciales de admin: admin@fakeshop.com / admin123
+                </small>
+              </div>
             </div>
           </div>
         </div>
