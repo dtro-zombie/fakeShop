@@ -14,10 +14,10 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Cuenta de admin predefinida
+  // Cuenta de admin predefinida (actualizada)
   const adminUser = {
-    email: "admin",
-    password: "admin",
+    email: "admin@fakeshop.com",
+    password: "admin123",
     name: "Administrador",
     role: "admin"
   };
