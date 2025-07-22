@@ -1,37 +1,26 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import './App.css'
-import Header from './components/header'
-import Footer from './components/footer' 
-import Productos from './pages/productos'
+import './App.css';
+import Header from './components/header';
+import Footer from './components/footer'; 
+import Productos from './pages/productos';
 import LoginForm from './pages/loginForm';
+import Carrito from './pages/carrito';
 
+import { CarritoProvider } from './context/carritoContext';
 
 function App() {
-
   return (
-    <>
-    <BrowserRouter>
-      <Header />
-
-       <Routes>
-        {/* <Route path="/" element={<Inicio />} /> */}
-        <Route path="/loginForm" element={<LoginForm/>} />
-        {/* <Route path="/productos" element={<Productos />} /> */}
-        {/* <Route path="/perfil/:id" element={
-          <RutaProtegida><Perfil /></RutaProtegida>
-        } />
-        <Route path="/admin" element={
-          <RutaProtegida><Administracion /></RutaProtegida>
-        } /> */}
-
-        <Route path="/" element={<Productos />} />
-
-      </Routes>
-    
-      <Footer />
-
+    <CarritoProvider>
+      <BrowserRouter>
+        <Header />
+        <Routes>
+          <Route path="/loginForm" element={<LoginForm />} />
+          <Route path="/" element={<Productos />} />
+          <Route path="/carrito" element={<Carrito />} />
+        </Routes>
+        <Footer />
       </BrowserRouter>
-    </>
+    </CarritoProvider>
   );
 }
 

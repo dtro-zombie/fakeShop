@@ -1,5 +1,7 @@
 import {Navbar,Container,Nav,NavDropdown} from 'react-bootstrap'
 import { Link, useNavigate } from 'react-router-dom';
+import 'bootstrap-icons/font/bootstrap-icons.css';
+
 
 
 export default function Header()
@@ -32,9 +34,10 @@ const navigate = useNavigate();
           </Nav>
           <Nav>
             <Nav.Link as={Link} to="/loginForm">Login</Nav.Link>
-            {/* <Nav.Link eventKey={2} href="#memes">
-              Dank memes
-            </Nav.Link> */}
+            <Nav.Link as={Link} to="/carrito">
+             <i className="bi bi-cart"> shop</i>
+
+            </Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Container>
