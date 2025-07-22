@@ -1,9 +1,9 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect, useMemo } from "react";
 import styled from "styled-components";
-import { Container, Row, Col, Spinner, Alert } from "react-bootstrap";
+import { Container, Row, Col, Spinner, Alert, Form, Pagination } from "react-bootstrap";
 import { CarritoContext } from "../context/carritoContext";
 import { useFetch } from "../useFetch";
-import { FaCartPlus, FaCheck, FaTrash, FaExclamationTriangle } from "react-icons/fa";
+import { FaCartPlus, FaCheck, FaTrash, FaExclamationTriangle, FaSearch } from "react-icons/fa";
 import { toast } from "react-toastify";
 
 const ProductContainer = styled(Container)`
@@ -75,11 +75,62 @@ const ProductButton = styled.button`
   }
 `;
 
+const SearchContainer = styled.div`
+  margin-bottom: 2rem;
+  position: relative;
+  
+  .search-icon {
+    position: absolute;
+    left: 12px;
+    top: 10px;
+    color: #6c757d;
+  }
+  
+  .form-control {
+    padding-left: 40px;
+    border-radius: 50px;
+  }
+`;
+
+const PaginationContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+  
+  .pagination {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+`;
+
 export default function Productos() {
   const { data, loading, error } = useFetch("https://687fa969efe65e52008a9006.mockapi.io/products");
   const { carrito, agregarAlCarrito, eliminarDelCarrito } = useContext(CarritoContext);
   const [mostrarSelect, setMostrarSelect] = useState({});
   const [cantidades, setCantidades] = useState({});
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [productsPerPage] = useState(8); // 8 productos por página
+
+  // Filtrar productos basado en el término de búsqueda
+  const filteredProducts = useMemo(() => {
+    if (!data) return [];
+    return data.filter(product => 
+      product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.category.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [data, searchTerm]);
+
+  // Calcular productos para la página actual
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+
+  // Resetear a la primera página cuando cambia el término de búsqueda
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
 
   const toggleSelect = (id) => {
     setMostrarSelect(prev => ({
@@ -116,6 +167,11 @@ export default function Productos() {
     });
   };
 
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   if (loading) return (
     <Container className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
       <Spinner animation="border" variant="primary" />
@@ -133,67 +189,126 @@ export default function Productos() {
 
   return (
     <ProductContainer className="mt-4">
-      <Row className="justify-content-center">
-        {data.map(item => (
-          <Col key={item.id} xs={12} sm={6} md={4} lg={3} className="mb-4">
-            <ProductCard className="card shadow-sm">
-              <ProductImage>
-                <img 
-                  src={item.image} 
-                  alt={item.title}
-                  className="p-3"
-                />
-              </ProductImage>
-              <div className="card-body">
-                <ProductTitle>{item.title}</ProductTitle>
-                <ProductCategory>{item.category}</ProductCategory>
-                <ProductPrice>${item.price}</ProductPrice>
-
-                {mostrarSelect[item.id] && !productoEnCarrito(item.id) && (
-                  <select
-                    className="form-select form-select-sm my-2"
-                    onChange={(e) => cambiarCantidad(item.id, e.target.value)}
-                    value={cantidades[item.id] || 1}
-                  >
-                    {[...Array(10)].map((_, i) => (
-                      <option key={i + 1} value={i + 1}>{i + 1}</option>
-                    ))}
-                  </select>
-                )}
-
-                <div className="d-flex justify-content-between mt-auto">
-                  {productoEnCarrito(item.id) ? (
-                    <ProductButton
-                      className="btn btn-danger btn-sm"
-                      onClick={() => handleEliminar(item.id, item.title)}
-                    >
-                      <FaTrash className="me-1" /> Quitar
-                    </ProductButton>
-                  ) : (
-                    <>
-                      {!mostrarSelect[item.id] ? (
-                        <ProductButton
-                          className="btn btn-success btn-sm"
-                          onClick={() => toggleSelect(item.id)}
-                        >
-                          <FaCartPlus className="me-1" /> Agregar
-                        </ProductButton>
-                      ) : (
-                        <ProductButton
-                          className="btn btn-primary btn-sm"
-                          onClick={() => handleAgregar(item, cantidades[item.id] || 1)}
-                        >
-                          <FaCheck className="me-1" /> Confirmar {cantidades[item.id] || 1}
-                        </ProductButton>
-                      )}
-                    </>
-                  )}
-                </div>
-              </div>
-            </ProductCard>
-          </Col>
-        ))}
+      {/* Barra de búsqueda */}
+      <Row className="justify-content-center mb-4">
+        <Col md={8}>
+          <SearchContainer>
+            <FaSearch className="search-icon" />
+            <Form.Control
+              type="text"
+              placeholder="Buscar productos por nombre o categoría..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </SearchContainer>
+        </Col>
       </Row>
+
+      {/* Lista de productos */}
+      <Row className="justify-content-center">
+        {currentProducts.length > 0 ? (
+          currentProducts.map(item => (
+            <Col key={item.id} xs={12} sm={6} md={4} lg={3} className="mb-4">
+              <ProductCard className="card shadow-sm">
+                <ProductImage>
+                  <img 
+                    src={item.image} 
+                    alt={item.title}
+                    className="p-3"
+                  />
+                </ProductImage>
+                <div className="card-body">
+                  <ProductTitle>{item.title}</ProductTitle>
+                  <ProductCategory>{item.category}</ProductCategory>
+                  <ProductPrice>${item.price}</ProductPrice>
+
+                  {mostrarSelect[item.id] && !productoEnCarrito(item.id) && (
+                    <select
+                      className="form-select form-select-sm my-2"
+                      onChange={(e) => cambiarCantidad(item.id, e.target.value)}
+                      value={cantidades[item.id] || 1}
+                    >
+                      {[...Array(10)].map((_, i) => (
+                        <option key={i + 1} value={i + 1}>{i + 1}</option>
+                      ))}
+                    </select>
+                  )}
+
+                  <div className="d-flex justify-content-between mt-auto">
+                    {productoEnCarrito(item.id) ? (
+                      <ProductButton
+                        className="btn btn-danger btn-sm"
+                        onClick={() => handleEliminar(item.id, item.title)}
+                      >
+                        <FaTrash className="me-1" /> Quitar
+                      </ProductButton>
+                    ) : (
+                      <>
+                        {!mostrarSelect[item.id] ? (
+                          <ProductButton
+                            className="btn btn-success btn-sm"
+                            onClick={() => toggleSelect(item.id)}
+                          >
+                            <FaCartPlus className="me-1" /> Agregar
+                          </ProductButton>
+                        ) : (
+                          <ProductButton
+                            className="btn btn-primary btn-sm"
+                            onClick={() => handleAgregar(item, cantidades[item.id] || 1)}
+                          >
+                            <FaCheck className="me-1" /> Confirmar {cantidades[item.id] || 1}
+                          </ProductButton>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </div>
+              </ProductCard>
+            </Col>
+          ))
+        ) : (
+          <Col className="text-center py-5">
+            <Alert variant="info">
+              No se encontraron productos que coincidan con tu búsqueda.
+            </Alert>
+          </Col>
+        )}
+      </Row>
+
+      {/* Paginación */}
+      {filteredProducts.length > productsPerPage && (
+        <PaginationContainer>
+          <Pagination>
+            <Pagination.First 
+              onClick={() => handlePageChange(1)} 
+              disabled={currentPage === 1} 
+            />
+            <Pagination.Prev 
+              onClick={() => handlePageChange(currentPage - 1)} 
+              disabled={currentPage === 1} 
+            />
+            
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map(number => (
+              <Pagination.Item
+                key={number}
+                active={number === currentPage}
+                onClick={() => handlePageChange(number)}
+              >
+                {number}
+              </Pagination.Item>
+            ))}
+            
+            <Pagination.Next 
+              onClick={() => handlePageChange(currentPage + 1)} 
+              disabled={currentPage === totalPages} 
+            />
+            <Pagination.Last 
+              onClick={() => handlePageChange(totalPages)} 
+              disabled={currentPage === totalPages} 
+            />
+          </Pagination>
+        </PaginationContainer>
+      )}
     </ProductContainer>
   );
 }
