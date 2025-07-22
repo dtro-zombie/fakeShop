@@ -1,9 +1,38 @@
-import { createContext, useState, useEffect } from 'react';
+import { createContext, useReducer, useEffect } from 'react';
 
 export const CarritoContext = createContext();
 
+const carritoReducer = (state, action) => {
+  switch (action.type) {
+    case 'AGREGAR':
+      const existe = state.find(p => p.id === action.producto.id);
+      if (existe) {
+        return state.map(p =>
+          p.id === action.producto.id 
+            ? { ...p, cantidad: p.cantidad + (action.cantidad || 1) } 
+            : p
+        );
+      }
+      return [...state, { ...action.producto, cantidad: action.cantidad || 1 }];
+    
+    case 'QUITAR':
+      return state.filter(p => p.id !== action.id);
+    
+    case 'CAMBIAR_CANTIDAD':
+      return state.map(p =>
+        p.id === action.id ? { ...p, cantidad: action.cantidad } : p
+      );
+    
+    case 'VACIAR':
+      return [];
+    
+    default:
+      return state;
+  }
+};
+
 export const CarritoProvider = ({ children }) => {
-  const [carrito, setCarrito] = useState(() => {
+  const [carrito, dispatch] = useReducer(carritoReducer, [], () => {
     const saved = localStorage.getItem('carrito');
     return saved ? JSON.parse(saved) : [];
   });
@@ -12,43 +41,32 @@ export const CarritoProvider = ({ children }) => {
     localStorage.setItem('carrito', JSON.stringify(carrito));
   }, [carrito]);
 
-  const agregarProducto = (producto, cantidad = 1) => {
-    setCarrito(prev => {
-      const existe = prev.find(p => p.id === producto.id);
-      if (existe) {
-        return prev.map(p =>
-          p.id === producto.id ? { ...p, cantidad: p.cantidad + cantidad } : p
-        );
-      } else {
-        return [...prev, { ...producto, cantidad }];
-      }
-    });
+  const agregarProducto = (producto, cantidad) => {
+    dispatch({ type: 'AGREGAR', producto, cantidad });
   };
 
   const quitarProducto = (id) => {
-    setCarrito(prev => prev.filter(p => p.id !== id));
+    dispatch({ type: 'QUITAR', id });
   };
 
   const cambiarCantidad = (id, cantidad) => {
-    setCarrito(prev =>
-      prev.map(p =>
-        p.id === id ? { ...p, cantidad: cantidad } : p
-      )
-    );
+    dispatch({ type: 'CAMBIAR_CANTIDAD', id, cantidad });
   };
 
   const vaciarCarrito = () => {
-    setCarrito([]);
+    dispatch({ type: 'VACIAR' });
   };
 
   return (
-    <CarritoContext.Provider value={{ 
-      carrito, 
-      agregarProducto, 
-      quitarProducto, 
-      cambiarCantidad,
-      vaciarCarrito 
-    }}>
+    <CarritoContext.Provider 
+      value={{ 
+        carrito, 
+        agregarProducto, 
+        quitarProducto, 
+        cambiarCantidad,
+        vaciarCarrito 
+      }}
+    >
       {children}
     </CarritoContext.Provider>
   );
