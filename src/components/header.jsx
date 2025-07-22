@@ -1,52 +1,43 @@
-import {Navbar,Container,Nav,NavDropdown} from 'react-bootstrap'
-import { Link, useNavigate } from 'react-router-dom';
-import 'bootstrap-icons/font/bootstrap-icons.css';
+import { useContext } from 'react';
+import { Link } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
+import { CarritoContext } from '../context/carritoContext';
 
+export default function Header() {
+  const { user, logout } = useContext(AuthContext);
+  const { carrito } = useContext(CarritoContext);
 
-
-export default function Header()
-{
-
-const navigate = useNavigate();
-
-    return(
-
-       <>
-     <Navbar collapseOnSelect expand="lg" className="bg-secondary text-light">
-      <Container>
-        <Navbar.Brand href="#home">Fake-Shop</Navbar.Brand>
-        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-        <Navbar.Collapse id="responsive-navbar-nav">
-          <Nav className="me-auto">
-             <Nav.Link as={Link} to="/">Inicio</Nav.Link>
-            {/* <Nav.Link href="#pricing">Poductos</Nav.Link> */}
-            {/* <NavDropdown title="Dropdown" id="collapsible-nav-dropdown">
-              <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
-              <NavDropdown.Item href="#action/3.2">
-                Another action
-              </NavDropdown.Item>
-              <NavDropdown.Item href="#action/3.3">Something</NavDropdown.Item>
-              <NavDropdown.Divider />
-              <NavDropdown.Item href="#action/3.4">
-                Separated link
-              </NavDropdown.Item>
-            </NavDropdown> */}
-          </Nav>
-          <Nav>
-            <Nav.Link as={Link} to="/loginForm">Login</Nav.Link>
-            <Nav.Link as={Link} to="/carrito">
-             <i className="bi bi-cart"> shop</i>
-
-            </Nav.Link>
-          </Nav>
-        </Navbar.Collapse>
-      </Container>
-    </Navbar>
-      <br />
-     
-    </>
-
-
-
-    )
+  return (
+    <header className="bg-dark text-white p-3">
+      <div className="container d-flex justify-content-between align-items-center">
+        <Link to="/" className="text-white text-decoration-none">
+          <h1>FakeShop</h1>
+        </Link>
+        
+        <div className="d-flex align-items-center gap-4">
+          {user ? (
+            <>
+              <span>Hola, {user.name}</span>
+              <button onClick={logout} className="btn btn-outline-light">
+                Cerrar sesión
+              </button>
+            </>
+          ) : (
+            <Link to="/loginForm" className="btn btn-outline-light">
+              Iniciar sesión
+            </Link>
+          )}
+          
+          <Link to="/carrito" className="btn btn-primary position-relative">
+            <i className="bi bi-cart3"></i>
+            {carrito.length > 0 && (
+              <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger ">
+                {carrito.reduce((total, item) => total + item.cantidad, 0)}
+              </span>
+            )}
+          </Link>
+        </div>
+      </div>
+    </header>
+  );
 }
