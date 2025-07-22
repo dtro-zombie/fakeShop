@@ -31,21 +31,29 @@ export default function AdminDashboard() {
   const imageExtensions = /\.(jpeg|jpg|gif|png|webp)$/i;
   const pricePattern = /^\d+(\.\d{1,2})?$/;
 
-  const fetchProducts = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(API_URL);
-      if (!response.ok) throw new Error('Error al cargar productos');
-      const data = await response.json();
-      setProducts(data);
-    } catch (err) {
-      setError(err.message);
-      showStatusModal(`❌ Error: ${err.message}`, 'danger');
-    } finally {
-      setLoading(false);
+ const fetchProducts = async (retries = 3) => {
+  setLoading(true);
+  setError(null);
+  try {
+    const response = await fetch(API_URL);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => null);
+      throw new Error(errorData?.message || 'Error al cargar productos');
     }
-  };
+    const data = await response.json();
+    setProducts(data);
+  } catch (err) {
+    if (retries > 0 && err.message.includes('Failed to fetch')) {
+      // Reintentar si es error de red
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      return fetchProducts(retries - 1);
+    }
+    showStatusModal(`❌ ${err.message}`, 'danger');
+    setError(err.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     fetchProducts();
