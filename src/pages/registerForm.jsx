@@ -77,7 +77,7 @@ export default function RegisterForm() {
               
               <div className="text-center mt-3">
                 <span>¿Ya tienes cuenta? </span>
-                <Link to="/loginForm" className="text-decoration-none">
+                <Link to="/login" className="text-decoration-none">
                   Inicia sesión
                 </Link>
               </div>

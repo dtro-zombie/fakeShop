@@ -29,7 +29,7 @@ export default function Header() {
             </>
           ) : (
             <>
-              <Link to="/loginForm" className="btn btn-outline-light btn-sm">
+              <Link to="/login" className="btn btn-outline-light btn-sm">
                 Iniciar sesión
               </Link>
               <Link to="/register" className="btn btn-outline-light btn-sm">

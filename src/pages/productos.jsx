@@ -5,7 +5,7 @@ import Spinner from "../components/spinner";
 
 export default function Productos() {
   const { data, loading, error } = useFetch("https://fakestoreapi.com/products");
-  const { carrito, agregarProducto, quitarProducto } = useContext(CarritoContext);
+  const { carrito, agregarAlCarrito, eliminarDelCarrito } = useContext(CarritoContext);
 
   const [mostrarSelect, setMostrarSelect] = useState({});
   const [cantidades, setCantidades] = useState({});
@@ -15,7 +15,6 @@ export default function Productos() {
       ...prev,
       [id]: !prev[id]
     }));
-    // Inicializar cantidad en 1 si es la primera vez
     if (!cantidades[id]) {
       setCantidades(prev => ({ ...prev, [id]: 1 }));
     }
@@ -70,7 +69,7 @@ export default function Productos() {
                   {productoEnCarrito(item.id) ? (
                     <button
                       className="btn btn-danger btn-sm w-100"
-                      onClick={() => quitarProducto(item.id)}
+                      onClick={() => eliminarDelCarrito(item.id)}
                     >
                       <i className="bi bi-trash"></i> Quitar del carrito
                     </button>
@@ -87,7 +86,7 @@ export default function Productos() {
                         <button
                           className="btn btn-primary btn-sm w-100"
                           onClick={() => {
-                            agregarProducto(item, cantidades[item.id] || 1);
+                            agregarAlCarrito(item, cantidades[item.id] || 1);
                             setMostrarSelect(prev => ({ ...prev, [item.id]: false }));
                           }}
                         >
