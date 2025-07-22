@@ -1,50 +1,64 @@
-import { useLocation } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+import { useState, useContext } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 
 export default function LoginForm() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const { login } = useContext(AuthContext);
+  const navigate = useNavigate();
   const location = useLocation();
-  const fromCarrito = location.state?.fromCarrito;
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+
+    try {
+      const success = await login(email, password);
+      if (success) {
+        navigate(location.state?.from?.pathname || '/');
+      } else {
+        setError('Credenciales incorrectas');
+      }
+    } catch (err) {
+      setError(err.message);
+    }
+  };
 
   return (
     <div className="container mt-5">
       <div className="row justify-content-center">
         <div className="col-md-6 col-lg-4">
-          {/* Alert cuando viene del carrito */}
-          {fromCarrito && (
-            <div className="alert alert-info alert-dismissible fade show mb-4">
-              <strong>¡Atención!</strong> Debes iniciar sesión para acceder al carrito
-              <button 
-                type="button" 
-                className="btn-close" 
-                data-bs-dismiss="alert"
-              ></button>
+          {location.state?.fromCarrito && (
+            <div className="alert alert-info mb-3">
+              Debes iniciar sesión para acceder al carrito
             </div>
           )}
 
-          {/* Tarjeta del formulario */}
+          {error && <div className="alert alert-danger mb-3">{error}</div>}
+
           <div className="card shadow">
-            <div className="card-header bg-primary text-white">
-              <h2 className="card-title text-center mb-0 py-2">Iniciar sesión</h2>
-            </div>
             <div className="card-body">
-              <form>
+              <h2 className="card-title text-center mb-4">Iniciar sesión</h2>
+              <form onSubmit={handleSubmit}>
                 <div className="mb-3">
-                  <label htmlFor="email" className="form-label">Email</label>
-                  <input 
-                    type="email" 
-                    className="form-control" 
-                    id="email" 
-                    placeholder="tu@email.com"
+                  <label>Email</label>
+                  <input
+                    type="email"
+                    className="form-control"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     required
                   />
                 </div>
                 <div className="mb-3">
-                  <label htmlFor="password" className="form-label">Contraseña</label>
+                  <label>Contraseña</label>
                   <input
                     type="password"
                     className="form-control"
-                    id="password"
-                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     required
                   />
                 </div>
@@ -52,12 +66,6 @@ export default function LoginForm() {
                   Ingresar
                 </button>
               </form>
-              
-              <div className="text-center mt-3">
-                <Link to="/" className="text-decoration-none">
-                  Volver al inicio
-                </Link>
-              </div>
             </div>
           </div>
         </div>
