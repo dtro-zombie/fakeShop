@@ -1,8 +1,10 @@
 import { useContext, useState } from "react";
 import styled from "styled-components";
-import { Container, Row, Col, Spinner } from "react-bootstrap";
+import { Container, Row, Col, Spinner, Alert } from "react-bootstrap";
 import { CarritoContext } from "../context/carritoContext";
 import { useFetch } from "../useFetch";
+import { FaCartPlus, FaCheck, FaTrash, FaExclamationTriangle } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 const ProductContainer = styled(Container)`
   margin-top: 2rem;
@@ -76,7 +78,6 @@ const ProductButton = styled.button`
 export default function Productos() {
   const { data, loading, error } = useFetch("https://687fa969efe65e52008a9006.mockapi.io/products");
   const { carrito, agregarAlCarrito, eliminarDelCarrito } = useContext(CarritoContext);
-
   const [mostrarSelect, setMostrarSelect] = useState({});
   const [cantidades, setCantidades] = useState({});
 
@@ -98,6 +99,23 @@ export default function Productos() {
     return carrito.some(item => item.id === id);
   };
 
+  const handleAgregar = (producto, cantidad) => {
+    agregarAlCarrito(producto, cantidad);
+    setMostrarSelect(prev => ({ ...prev, [producto.id]: false }));
+    toast.success(`${cantidad} ${producto.title} agregado al carrito`, {
+      position: "top-right",
+      autoClose: 2000,
+    });
+  };
+
+  const handleEliminar = (id, title) => {
+    eliminarDelCarrito(id);
+    toast.warning(`"${title}" eliminado del carrito`, {
+      position: "top-right",
+      autoClose: 2000,
+    });
+  };
+
   if (loading) return (
     <Container className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
       <Spinner animation="border" variant="primary" />
@@ -106,7 +124,10 @@ export default function Productos() {
   
   if (error) return (
     <Container className="text-center py-5">
-      <Alert variant="danger">Error: {error.message}</Alert>
+      <Alert variant="danger">
+        <FaExclamationTriangle className="me-2" />
+        Error: {error.message}
+      </Alert>
     </Container>
   );
 
@@ -144,9 +165,9 @@ export default function Productos() {
                   {productoEnCarrito(item.id) ? (
                     <ProductButton
                       className="btn btn-danger btn-sm"
-                      onClick={() => eliminarDelCarrito(item.id)}
+                      onClick={() => handleEliminar(item.id, item.title)}
                     >
-                      <i className="bi bi-trash"></i> Quitar
+                      <FaTrash className="me-1" /> Quitar
                     </ProductButton>
                   ) : (
                     <>
@@ -155,17 +176,14 @@ export default function Productos() {
                           className="btn btn-success btn-sm"
                           onClick={() => toggleSelect(item.id)}
                         >
-                          <i className="bi bi-cart-plus"></i> Agregar
+                          <FaCartPlus className="me-1" /> Agregar
                         </ProductButton>
                       ) : (
                         <ProductButton
                           className="btn btn-primary btn-sm"
-                          onClick={() => {
-                            agregarAlCarrito(item, cantidades[item.id] || 1);
-                            setMostrarSelect(prev => ({ ...prev, [item.id]: false }));
-                          }}
+                          onClick={() => handleAgregar(item, cantidades[item.id] || 1)}
                         >
-                          <i className="bi bi-check"></i> Confirmar {cantidades[item.id] || 1}
+                          <FaCheck className="me-1" /> Confirmar {cantidades[item.id] || 1}
                         </ProductButton>
                       )}
                     </>

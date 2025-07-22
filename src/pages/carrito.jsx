@@ -2,6 +2,8 @@ import { useContext } from 'react';
 import styled from 'styled-components';
 import { Container } from 'react-bootstrap';
 import { CarritoContext } from '../context/carritoContext';
+import { FaTrash, FaCreditCard, FaShoppingCart } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 
 const CartContainer = styled(Container)`
   padding-top: 2rem;
@@ -36,10 +38,34 @@ const Carrito = () => {
     return carrito.reduce((total, producto) => total + (producto.price * producto.cantidad), 0);
   };
 
+  const handleEliminar = (id, title) => {
+    eliminarDelCarrito(id);
+    toast.warning(`"${title}" eliminado del carrito`, {
+      position: "top-right",
+      autoClose: 2000,
+    });
+  };
+
+  const handleVaciarCarrito = () => {
+    vaciarCarrito();
+    toast.error('Carrito vaciado', {
+      position: "top-right",
+      autoClose: 2000,
+    });
+  };
+
+  const handleFinalizarCompra = () => {
+    toast.success('¡Compra finalizada con éxito!', {
+      position: "top-right",
+      autoClose: 3000,
+    });
+    vaciarCarrito();
+  };
+
   return (
     <CartContainer className="py-5">
       <h2 className="mb-4 text-primary">
-        <i className="bi bi-cart-fill me-2"></i>Tu Carrito de Compras
+        <FaShoppingCart className="me-2" /> Tu Carrito de Compras
       </h2>
 
       {carrito.length === 0 ? (
@@ -49,9 +75,9 @@ const Carrito = () => {
           <div className="d-flex justify-content-end mb-3">
             <button 
               className="btn btn-danger"
-              onClick={vaciarCarrito}
+              onClick={handleVaciarCarrito}
             >
-              <i className="bi bi-trash-fill me-2"></i>Vaciar carrito
+              <FaTrash className="me-2" /> Vaciar carrito
             </button>
           </div>
 
@@ -90,9 +116,9 @@ const Carrito = () => {
                 <div className="col-md-2 text-center">
                   <button
                     className="btn btn-outline-danger btn-sm"
-                    onClick={() => eliminarDelCarrito(producto.id)}
+                    onClick={() => handleEliminar(producto.id, producto.title)}
                   >
-                    <i className="bi bi-trash-fill me-1"></i>Quitar
+                    <FaTrash className="me-1" /> Quitar
                   </button>
                 </div>
               </div>
@@ -104,11 +130,14 @@ const Carrito = () => {
               Total: <span className="text-success">${calcularTotal().toFixed(2)}</span>
             </h4>
             <div>
-              <button className="btn btn-outline-danger me-3" onClick={vaciarCarrito}>
-                <i className="bi bi-trash-fill me-1"></i>Vaciar todo
+              <button className="btn btn-outline-danger me-3" onClick={handleVaciarCarrito}>
+                <FaTrash className="me-1" /> Vaciar todo
               </button>
-              <button className="btn btn-success btn-lg shadow">
-                <i className="bi bi-credit-card-fill me-2"></i>Finalizar compra
+              <button 
+                className="btn btn-success btn-lg shadow"
+                onClick={handleFinalizarCompra}
+              >
+                <FaCreditCard className="me-2" /> Finalizar compra
               </button>
             </div>
           </TotalSection>

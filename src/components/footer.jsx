@@ -1,12 +1,13 @@
-
 import styled from 'styled-components';
 import { Container } from 'react-bootstrap';
+import { FaFacebookF, FaTwitter, FaGoogle, FaInstagram, FaLinkedinIn, FaGithub } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 
 const StyledFooter = styled.footer`
   background-color: #343a40;
   color: white;
   width: 100%;
-  margin-top: auto; /* Esto es clave para que se quede abajo */
+  margin-top: auto;
   padding: 20px 0;
 `;
 
@@ -43,21 +44,41 @@ const Copyright = styled.div`
   }
 `;
 
+const iconComponents = {
+  'facebook-f': FaFacebookF,
+  'twitter': FaTwitter,
+  'google': FaGoogle,
+  'instagram': FaInstagram,
+  'linkedin-in': FaLinkedinIn,
+  'github': FaGithub
+};
+
 export default function Footer() {
+  const handleSocialClick = (platform) => {
+    toast.info(`Redireccionando a ${platform}`, {
+      position: "top-right",
+      autoClose: 2000,
+    });
+  };
+
   return (
     <StyledFooter>
-       <Container className="p-4 pb-0">
+      <Container className="p-4 pb-0">
         <SocialIcons className="mb-4 text-center">
-          {['facebook-f', 'twitter', 'google', 'instagram', 'linkedin-in', 'github'].map((icon) => (
-            <a 
-              key={icon}
-              className={`btn btn-outline-light btn-floating m-1`} 
-              href="#!" 
-              role="button"
-            >
-              <i className={`fab fa-${icon}`}></i>
-            </a>
-          ))}
+          {Object.keys(iconComponents).map((icon) => {
+            const IconComponent = iconComponents[icon];
+            return (
+              <a 
+                key={icon}
+                className="btn btn-outline-light btn-floating m-1" 
+                href="#!" 
+                role="button"
+                onClick={() => handleSocialClick(icon)}
+              >
+                <IconComponent />
+              </a>
+            );
+          })}
         </SocialIcons>
       </Container>
 
