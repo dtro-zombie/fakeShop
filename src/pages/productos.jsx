@@ -4,7 +4,7 @@ import { useFetch } from "../useFetch";
 import Spinner from "../components/spinner";
 
 export default function Productos() {
-  const { data, loading, error } = useFetch("https://fakestoreapi.com/products");
+  const { data, loading, error } = useFetch("https://687fa969efe65e52008a9006.mockapi.io/products");
   const { carrito, agregarAlCarrito, eliminarDelCarrito } = useContext(CarritoContext);
 
   const [mostrarSelect, setMostrarSelect] = useState({});
