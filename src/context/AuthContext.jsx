@@ -2,42 +2,78 @@ import { createContext, useState, useEffect, useContext } from 'react';
 
 export const AuthContext = createContext();
 
-// Exporta el hook useAuth para usar el contexto
 export const useAuth = () => {
-  return useContext(AuthContext);
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth debe usarse dentro de AuthProvider');
+  }
+  return context;
 };
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('user');
-    return saved ? JSON.parse(saved) : null;
-  });
+  const [user, setUser] = useState(null);
 
-  useEffect(() => {
-    if (user) {
-      localStorage.setItem('user', JSON.stringify(user));
-    } else {
-      localStorage.removeItem('user');
-    }
-  }, [user]);
+  // Cuenta de admin predefinida
+  const adminUser = {
+    email: "admin@fakeshop.com",
+    password: "admin123",
+    name: "Administrador",
+    role: "admin"
+  };
 
+  // Iniciar sesión
   const login = (email, password) => {
-    // Simulamos login exitoso
-    const fakeUser = {
-      email,
-      name: email.split('@')[0],
-      token: Math.random().toString(36).substring(2)
-    };
-    setUser(fakeUser);
+    // Verificar admin
+    if (email === adminUser.email && password === adminUser.password) {
+      const userData = { ...adminUser };
+      localStorage.setItem('user', JSON.stringify(userData));
+      setUser(userData);
+      return true;
+    }
+
+    // Verificar usuarios registrados
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    const foundUser = users.find(u => u.email === email && u.password === password);
+
+    if (foundUser) {
+      localStorage.setItem('user', JSON.stringify(foundUser));
+      setUser(foundUser);
+      return true;
+    }
+
+    return false;
+  };
+
+  // Registrar usuario
+  const register = (email, password, name) => {
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    
+    if (users.some(u => u.email === email)) {
+      throw new Error('El email ya está registrado');
+    }
+
+    const newUser = { email, password, name, role: 'user' };
+    localStorage.setItem('users', JSON.stringify([...users, newUser]));
+    setUser(newUser);
     return true;
   };
 
+  // Cerrar sesión
   const logout = () => {
+    localStorage.removeItem('user');
     setUser(null);
   };
 
+  // Cargar usuario al iniciar
+  useEffect(() => {
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    }
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, register }}>
       {children}
     </AuthContext.Provider>
   );

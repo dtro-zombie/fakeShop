@@ -14,24 +14,34 @@ export default function Header() {
           <h1>FakeShop</h1>
         </Link>
         
-        <div className="d-flex align-items-center gap-4">
+        <div className="d-flex align-items-center gap-3">
           {user ? (
             <>
-              <span>Hola, {user.name}</span>
-              <button onClick={logout} className="btn btn-outline-light">
+              <span className="me-2">Hola, {user.name}</span>
+              {user.role === 'admin' && (
+                <Link to="/admin" className="btn btn-outline-light btn-sm">
+                  Admin
+                </Link>
+              )}
+              <button onClick={logout} className="btn btn-outline-light btn-sm">
                 Cerrar sesión
               </button>
             </>
           ) : (
-            <Link to="/loginForm" className="btn btn-outline-light">
-              Iniciar sesión
-            </Link>
+            <>
+              <Link to="/loginForm" className="btn btn-outline-light btn-sm">
+                Iniciar sesión
+              </Link>
+              <Link to="/register" className="btn btn-outline-light btn-sm">
+                Registrarse
+              </Link>
+            </>
           )}
           
           <Link to="/carrito" className="btn btn-primary position-relative">
             <i className="bi bi-cart3"></i>
             {carrito.length > 0 && (
-              <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger ">
+              <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                 {carrito.reduce((total, item) => total + item.cantidad, 0)}
               </span>
             )}
