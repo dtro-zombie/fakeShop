@@ -1,5 +1,6 @@
 # 🛍️ FakeShop - E-commerce React Moderno
 
+link al proyecto: https://fake-shop-eobxmov8o-dtro-zombies-projects.vercel.app/
 
 FakeShop es una aplicación de comercio electrónico completa construida con React que simula una experiencia de compra real con catálogo de productos, carrito de compras y proceso de checkout.
 
