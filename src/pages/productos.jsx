@@ -1,7 +1,77 @@
 import { useContext, useState } from "react";
+import styled from "styled-components";
+import { Container, Row, Col, Spinner } from "react-bootstrap";
 import { CarritoContext } from "../context/carritoContext";
 import { useFetch } from "../useFetch";
-import Spinner from "../components/spinner";
+
+const ProductContainer = styled(Container)`
+  margin-top: 2rem;
+`;
+
+const ProductCard = styled.div`
+  height: 100%;
+  transition: all 0.3s ease;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  .card-body {
+    display: flex;
+    flex-direction: column;
+  }
+`;
+
+const ProductImage = styled.div`
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  overflow: hidden;
+  
+  img {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+    
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
+`;
+
+const ProductTitle = styled.h6`
+  font-weight: 600;
+  color: #343a40;
+  margin-bottom: 0.5rem;
+`;
+
+const ProductCategory = styled.p`
+  font-size: 0.8rem;
+  color: #6c757d;
+`;
+
+const ProductPrice = styled.span`
+  font-weight: 700;
+  color: #28a745;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+`;
+
+const ProductButton = styled.button`
+  width: 100%;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  
+  &:hover {
+    transform: translateY(-2px);
+  }
+`;
 
 export default function Productos() {
   const { data, loading, error } = useFetch("https://687fa969efe65e52008a9006.mockapi.io/products");
@@ -28,30 +98,35 @@ export default function Productos() {
     return carrito.some(item => item.id === id);
   };
 
-  if (loading) return <Spinner />;
-  if (error) return <p>Error: {error.message}</p>;
+  if (loading) return (
+    <Container className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
+      <Spinner animation="border" variant="primary" />
+    </Container>
+  );
+  
+  if (error) return (
+    <Container className="text-center py-5">
+      <Alert variant="danger">Error: {error.message}</Alert>
+    </Container>
+  );
 
   return (
-    <div className="container mt-4">
-      <div className="row d-flex justify-content-center">
+    <ProductContainer className="mt-4">
+      <Row className="justify-content-center">
         {data.map(item => (
-          <div className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4" key={item.id}>
-            <div className="card h-100 shadow-sm">
-              <div
-                className="d-flex align-items-center justify-content-center bg-white"
-                style={{ height: "200px", overflow: "hidden" }}
-              >
+          <Col key={item.id} xs={12} sm={6} md={4} lg={3} className="mb-4">
+            <ProductCard className="card shadow-sm">
+              <ProductImage>
                 <img 
                   src={item.image} 
                   alt={item.title}
-                  className="img-fluid p-3" 
-                  style={{ objectFit: "contain", height: "100%" }} 
+                  className="p-3"
                 />
-              </div>
-              <div className="card-body d-flex flex-column">
-                <h6 className="fw-bold text-dark">{item.title}</h6>
-                <p className="text-muted small">{item.category}</p>
-                <span className="fw-bold text-success fs-5">${item.price}</span>
+              </ProductImage>
+              <div className="card-body">
+                <ProductTitle>{item.title}</ProductTitle>
+                <ProductCategory>{item.category}</ProductCategory>
+                <ProductPrice>${item.price}</ProductPrice>
 
                 {mostrarSelect[item.id] && !productoEnCarrito(item.id) && (
                   <select
@@ -67,40 +142,40 @@ export default function Productos() {
 
                 <div className="d-flex justify-content-between mt-auto">
                   {productoEnCarrito(item.id) ? (
-                    <button
-                      className="btn btn-danger btn-sm w-100"
+                    <ProductButton
+                      className="btn btn-danger btn-sm"
                       onClick={() => eliminarDelCarrito(item.id)}
                     >
-                      <i className="bi bi-trash"></i> Quitar del carrito
-                    </button>
+                      <i className="bi bi-trash"></i> Quitar
+                    </ProductButton>
                   ) : (
                     <>
                       {!mostrarSelect[item.id] ? (
-                        <button
-                          className="btn btn-success btn-sm w-100"
+                        <ProductButton
+                          className="btn btn-success btn-sm"
                           onClick={() => toggleSelect(item.id)}
                         >
-                          <i className="bi bi-cart-plus"></i> Agregar al carrito
-                        </button>
+                          <i className="bi bi-cart-plus"></i> Agregar
+                        </ProductButton>
                       ) : (
-                        <button
-                          className="btn btn-primary btn-sm w-100"
+                        <ProductButton
+                          className="btn btn-primary btn-sm"
                           onClick={() => {
                             agregarAlCarrito(item, cantidades[item.id] || 1);
                             setMostrarSelect(prev => ({ ...prev, [item.id]: false }));
                           }}
                         >
-                          <i className="bi bi-check"></i> Confirmar {cantidades[item.id] || 1} unidades
-                        </button>
+                          <i className="bi bi-check"></i> Confirmar {cantidades[item.id] || 1}
+                        </ProductButton>
                       )}
                     </>
                   )}
                 </div>
               </div>
-            </div>
-          </div>
+            </ProductCard>
+          </Col>
         ))}
-      </div>
-    </div>
+      </Row>
+    </ProductContainer>
   );
 }

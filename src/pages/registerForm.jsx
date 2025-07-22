@@ -1,6 +1,68 @@
 import { useState, useContext } from 'react';
+import styled from 'styled-components';
+import { Container, Row, Col, Card, Form, Button, Alert } from 'react-bootstrap';
 import { AuthContext } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
+
+const RegisterContainer = styled(Container)`
+  margin-top: 5rem;
+`;
+
+const RegisterCard = styled(Card)`
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  border: none;
+  
+  .card-header {
+    background-color: #0d6efd;
+    color: white;
+    text-align: center;
+    padding: 1.5rem;
+    border-bottom: none;
+  }
+  
+  .card-title {
+    font-weight: 600;
+    margin-bottom: 0;
+  }
+  
+  .card-body {
+    padding: 2rem;
+  }
+`;
+
+const StyledForm = styled(Form)`
+  .form-label {
+    font-weight: 500;
+  }
+  
+  .btn-primary {
+    background-color: #0d6efd;
+    border: none;
+    padding: 0.5rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background-color: #0b5ed7;
+      transform: translateY(-2px);
+    }
+  }
+`;
+
+const LoginLink = styled.div`
+  text-align: center;
+  margin-top: 1.5rem;
+  
+  a {
+    color: #0d6efd;
+    font-weight: 500;
+    text-decoration: none;
+    
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+`;
 
 export default function RegisterForm() {
   const [email, setEmail] = useState('');
@@ -26,65 +88,57 @@ export default function RegisterForm() {
   };
 
   return (
-    <div className="container mt-5">
-      <div className="row justify-content-center">
-        <div className="col-md-6 col-lg-4">
-          <div className="card shadow">
-            <div className="card-header bg-primary text-white">
-              <h2 className="card-title text-center mb-0 py-2">Registrarse</h2>
+    <RegisterContainer>
+      <Row className="justify-content-center vh-100" >
+        <Col md={6} lg={4}>
+          <RegisterCard>
+            <div className="card-header">
+              <h2 className="card-title">Registrarse</h2>
             </div>
             <div className="card-body">
-              {error && <div className="alert alert-danger">{error}</div>}
+              {error && <Alert variant="danger">{error}</Alert>}
               
-              <form onSubmit={handleSubmit}>
-                <div className="mb-3">
-                  <label htmlFor="name" className="form-label">Nombre</label>
-                  <input
+              <StyledForm onSubmit={handleSubmit}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Nombre</Form.Label>
+                  <Form.Control
                     type="text"
-                    className="form-control"
-                    id="name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
                   />
-                </div>
-                <div className="mb-3">
-                  <label htmlFor="email" className="form-label">Email</label>
-                  <input
+                </Form.Group>
+                <Form.Group className="mb-3">
+                  <Form.Label>Email</Form.Label>
+                  <Form.Control
                     type="email"
-                    className="form-control"
-                    id="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
                   />
-                </div>
-                <div className="mb-3">
-                  <label htmlFor="password" className="form-label">Contraseña</label>
-                  <input
+                </Form.Group>
+                <Form.Group className="mb-3">
+                  <Form.Label>Contraseña</Form.Label>
+                  <Form.Control
                     type="password"
-                    className="form-control"
-                    id="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
                   />
-                </div>
-                <button type="submit" className="btn btn-primary w-100">
+                </Form.Group>
+                <Button type="submit" variant="primary" className="w-100">
                   Registrarse
-                </button>
-              </form>
+                </Button>
+              </StyledForm>
               
-              <div className="text-center mt-3">
+              <LoginLink>
                 <span>¿Ya tienes cuenta? </span>
-                <Link to="/login" className="text-decoration-none">
-                  Inicia sesión
-                </Link>
-              </div>
+                <Link to="/login">Inicia sesión</Link>
+              </LoginLink>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
+          </RegisterCard>
+        </Col>
+      </Row>
+    </RegisterContainer>
   );
 }

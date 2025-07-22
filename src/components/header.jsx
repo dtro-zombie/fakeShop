@@ -1,5 +1,6 @@
 import { useContext } from 'react';
 import { Link } from 'react-router-dom';
+import { Container, Navbar, Nav, NavDropdown, Button, Badge } from 'react-bootstrap';
 import { AuthContext } from '../context/AuthContext';
 import { CarritoContext } from '../context/carritoContext';
 
@@ -8,46 +9,60 @@ export default function Header() {
   const { carrito } = useContext(CarritoContext);
 
   return (
-    <header className="bg-dark text-white p-3">
-      <div className="container d-flex justify-content-between align-items-center">
-        <Link to="/" className="text-white text-decoration-none">
-          <h1>FakeShop</h1>
-        </Link>
-        
-        <div className="d-flex align-items-center gap-3">
-          {user ? (
-            <>
-              <span className="me-2">Hola, {user.name}</span>
-              {user.role === 'admin' && (
-                <Link to="/admin/dashboard" className="btn btn-outline-light btn-sm">
-                  Admin
-                </Link>
-              )}
-              <button onClick={logout} className="btn btn-outline-light btn-sm">
-                Cerrar sesión
-              </button>
-            </>
-          ) : (
-            <>
-              <Link to="/login" className="btn btn-outline-light btn-sm">
-                Iniciar sesión
-              </Link>
-              <Link to="/register" className="btn btn-outline-light btn-sm">
-                Registrarse
-              </Link>
-            </>
-          )}
-          
-          <Link to="/carrito" className="btn btn-primary position-relative">
-            <i className="bi bi-cart3"></i>
-            {carrito.length > 0 && (
-              <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                {carrito.reduce((total, item) => total + item.cantidad, 0)}
-              </span>
+    <Navbar bg="dark" variant="dark" expand="lg" sticky="top" className="shadow-sm">
+      <Container>
+        {/* Logo / Nombre de la tienda */}
+        <Navbar.Brand as={Link} to="/" className="fw-bold fs-4">
+          FakeShop
+        </Navbar.Brand>
+
+        {/* Botón para móviles (hamburguesa) */}
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+
+        {/* Contenido colapsable en móviles */}
+        <Navbar.Collapse id="basic-navbar-nav">
+          <Nav className="ms-auto d-flex align-items-center gap-2">
+            {/* Menú de usuario */}
+            {user ? (
+              <>
+                <span className="text-white d-none d-lg-inline">Hola, {user.name}</span>
+                {user.role === 'admin' && (
+                  <Button as={Link} to="/admin/dashboard" variant="outline-light" size="sm">
+                    Admin
+                  </Button>
+                )}
+                <Button onClick={logout} variant="outline-light" size="sm">
+                  Cerrar sesión
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button as={Link} to="/login" variant="outline-light" size="sm">
+                  Iniciar sesión
+                </Button>
+                <Button as={Link} to="/register" variant="outline-light" size="sm">
+                  Registrarse
+                </Button>
+              </>
             )}
-          </Link>
-        </div>
-      </div>
-    </header>
+
+            {/* Carrito (con badge) */}
+            <Button 
+              as={Link} 
+              to="/carrito" 
+              variant="primary" 
+              className="position-relative"
+            >
+              <i className="bi bi-cart3"></i>
+              {carrito.length > 0 && (
+                <Badge pill bg="danger" className="position-absolute top-0 start-100 translate-middle">
+                  {carrito.reduce((total, item) => total + item.cantidad, 0)}
+                </Badge>
+              )}
+            </Button>
+          </Nav>
+        </Navbar.Collapse>
+      </Container>
+    </Navbar>
   );
 }

@@ -1,5 +1,33 @@
 import { useContext } from 'react';
+import styled from 'styled-components';
+import { Container } from 'react-bootstrap';
 import { CarritoContext } from '../context/carritoContext';
+
+const CartContainer = styled(Container)`
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  min-height: 100vh;
+`;
+
+const CartItem = styled.div`
+  transition: all 0.3s ease;
+  
+  &:hover {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
+`;
+
+const ProductImage = styled.img`
+  height: 80px;
+  object-fit: contain;
+`;
+
+const TotalSection = styled.div`
+  border-top: 1px solid #dee2e6;
+  padding-top: 1.5rem;
+  margin-top: 3rem;
+`;
 
 const Carrito = () => {
   const { carrito, eliminarDelCarrito, actualizarCantidad, vaciarCarrito } = useContext(CarritoContext);
@@ -9,7 +37,7 @@ const Carrito = () => {
   };
 
   return (
-    <div className="container py-5 min-vh-100">
+    <CartContainer className="py-5">
       <h2 className="mb-4 text-primary">
         <i className="bi bi-cart-fill me-2"></i>Tu Carrito de Compras
       </h2>
@@ -28,14 +56,13 @@ const Carrito = () => {
           </div>
 
           {carrito.map((producto) => (
-            <div className="card mb-4 shadow-sm rounded" key={producto.id}>
+            <CartItem className="card mb-4 shadow-sm rounded" key={producto.id}>
               <div className="row g-0 align-items-center">
                 <div className="col-md-2 p-2 text-center">
-                  <img
+                  <ProductImage
                     src={producto.image}
                     alt={producto.title}
                     className="img-fluid rounded"
-                    style={{ height: '80px', objectFit: 'contain' }}
                   />
                 </div>
                 <div className="col-md-4">
@@ -69,10 +96,10 @@ const Carrito = () => {
                   </button>
                 </div>
               </div>
-            </div>
+            </CartItem>
           ))}
 
-          <div className="d-flex justify-content-between align-items-center border-top pt-4 mt-5">
+          <TotalSection className="d-flex justify-content-between align-items-center">
             <h4 className="text-dark">
               Total: <span className="text-success">${calcularTotal().toFixed(2)}</span>
             </h4>
@@ -84,10 +111,10 @@ const Carrito = () => {
                 <i className="bi bi-credit-card-fill me-2"></i>Finalizar compra
               </button>
             </div>
-          </div>
+          </TotalSection>
         </>
       )}
-    </div>
+    </CartContainer>
   );
 };
 
