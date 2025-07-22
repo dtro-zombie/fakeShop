@@ -1,13 +1,8 @@
 # 🛍️ FakeShop - E-commerce React Moderno
 
-[![React](https://img.shields.io/badge/React-18.2.0-61DAFB?logo=react)](https://reactjs.org/)
-[![Vite](https://img.shields.io/badge/Vite-4.4.5-B73BFE?logo=vite)](https://vitejs.dev/)
-[![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3.1-7952B3?logo=bootstrap)](https://getbootstrap.com/)
-[![License](https://img.shields.io/badge/License-MIT-blue)](https://opensource.org/licenses/MIT)
 
 FakeShop es una aplicación de comercio electrónico completa construida con React que simula una experiencia de compra real con catálogo de productos, carrito de compras y proceso de checkout.
 
-![Captura de FakeShop](https://raw.githubusercontent.com/dtro-zombie/fakeShop/main/public/screenshot.png)
 
 ## ✨ Características destacadas
 
